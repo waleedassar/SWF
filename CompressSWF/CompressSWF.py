@@ -91,7 +91,7 @@ if inFLen > 8:
         T = zlib.compress(DecompCon)
     elif Compression == 2:
         T = pylzma.compress(DecompCon)
-        len_T = len(T)
+        len_T = len(T) - 5 # 5-byte properties of LZMA Header
         s_len_T = struct.pack("L",len_T)
         NewFile += s_len_T
     if T != "":
