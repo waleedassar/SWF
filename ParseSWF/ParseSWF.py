@@ -183,11 +183,29 @@ if CompressType == 1:
         NewData += fCon[4:8]
         NewData += decompressed
         if deCompressX == True:
-            fOutCWS = open("decompressed.swf","wb")
+            fOutCWS = open("decompressed_zlib.swf","wb")
             fOutCWS.write(NewData)
             fOutCWS.close()
-            print "Dumped to decompressed.swf"
-
+            print "Dumped to decompressed_zlib.swf"
+elif CompressType == 2:
+    lzma_size = struct.unpack("L",fCon[8:12])[0]
+    Props = fCon[12:17] #5-byte properties
+    CompCon = fCon[17:] #compressed data
+    if len(CompCon) != lzma_size:
+        print "Anomaly: LZMA Header does not contain th right size or input File has some appended data"
+    decompressed = pylzma.decompress(Props + CompCon)
+    len_decompressed = len(decompressed)
+    if len_decompressed + 8 == Size:
+        print "Decompressed successfully"
+        NewData = "FWS"
+        NewData += fCon[3]
+        NewData += fCon[4:8]
+        NewData += decompressed
+        if deCompressX == True:
+            fOutZWS = open("decompressed_lzma.swf","wb")
+            fOutZWS.write(NewData)
+            fOutZWS.close()
+            print "Dumped to decompressed_lzma.swf"
         
 
 nBits = ord(NewData[8])>>3
